@@ -39,4 +39,30 @@ var _ = Service("book", func() {
 			Response(StatusOK)
 		})
 	})
+	Method("update", func() {
+		Description("Updating the existing book")
+
+		Payload(Book)
+
+		HTTP(func() {
+			PATCH("/book/{id}")
+			Response(StatusOK)
+		})
+	})
+
+	//Method to remove a particular book
+	Method("remove", func() {
+		Description("Remove book from storage")
+		Payload(func() {
+			Attribute("id", UInt32, "ID of book to remove")
+			Required("id")
+		})
+
+		HTTP(func() {
+			DELETE("/book/{id}")
+
+			Response(StatusOK)
+			Response("not-found", StatusNotFound)
+		})
+	})
 })
