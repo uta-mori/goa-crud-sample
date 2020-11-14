@@ -1,0 +1,9 @@
+PATCH  http://localhost:8000/book/1 HTTP/1.1
+content-type: application/json
+
+{
+  "id": 1,
+  "name": "New Book",
+  "description": "最新の素晴らしい書籍",
+  "price": 500
+}

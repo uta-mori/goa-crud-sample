@@ -1,0 +1,9 @@
+POST http://localhost:8000 HTTP/1.1
+content-type: application/json
+
+{
+  "id": 1,
+  "name": "book1",
+  "description": "素晴らしい書籍",
+  "price": 120
+}

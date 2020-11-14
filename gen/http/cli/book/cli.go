@@ -23,7 +23,7 @@ import (
 //    command (subcommand1|subcommand2|...)
 //
 func UsageCommands() string {
-	return `book (create|list)
+	return `book (create|list|update|remove)
 `
 }
 
@@ -54,10 +54,19 @@ func ParseEndpoint(
 		bookCreateBodyFlag = bookCreateFlags.String("body", "REQUIRED", "")
 
 		bookListFlags = flag.NewFlagSet("list", flag.ExitOnError)
+
+		bookUpdateFlags    = flag.NewFlagSet("update", flag.ExitOnError)
+		bookUpdateBodyFlag = bookUpdateFlags.String("body", "REQUIRED", "")
+		bookUpdateIDFlag   = bookUpdateFlags.String("id", "REQUIRED", "ID of the book")
+
+		bookRemoveFlags  = flag.NewFlagSet("remove", flag.ExitOnError)
+		bookRemoveIDFlag = bookRemoveFlags.String("id", "REQUIRED", "ID of book to remove")
 	)
 	bookFlags.Usage = bookUsage
 	bookCreateFlags.Usage = bookCreateUsage
 	bookListFlags.Usage = bookListUsage
+	bookUpdateFlags.Usage = bookUpdateUsage
+	bookRemoveFlags.Usage = bookRemoveUsage
 
 	if err := flag.CommandLine.Parse(os.Args[1:]); err != nil {
 		return nil, nil, err
@@ -99,6 +108,12 @@ func ParseEndpoint(
 			case "list":
 				epf = bookListFlags
 
+			case "update":
+				epf = bookUpdateFlags
+
+			case "remove":
+				epf = bookRemoveFlags
+
 			}
 
 		}
@@ -130,6 +145,12 @@ func ParseEndpoint(
 			case "list":
 				endpoint = c.List()
 				data = nil
+			case "update":
+				endpoint = c.Update()
+				data, err = bookc.BuildUpdatePayload(*bookUpdateBodyFlag, *bookUpdateIDFlag)
+			case "remove":
+				endpoint = c.Remove()
+				data, err = bookc.BuildRemovePayload(*bookRemoveIDFlag)
 			}
 		}
 	}
@@ -149,6 +170,8 @@ Usage:
 COMMAND:
     create: Adds a new book to the book store.
     list: List all entries
+    update: Updating the existing book
+    remove: Remove book from storage
 
 Additional help:
     %s book COMMAND --help
@@ -177,5 +200,32 @@ List all entries
 
 Example:
     `+os.Args[0]+` book list
+`, os.Args[0])
+}
+
+func bookUpdateUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] book update -body JSON -id UINT32
+
+Updating the existing book
+    -body JSON: 
+    -id UINT32: ID of the book
+
+Example:
+    `+os.Args[0]+` book update --body '{
+      "description": "Books are human\'s best friend",
+      "name": "book1",
+      "price": 100
+   }' --id 1
+`, os.Args[0])
+}
+
+func bookRemoveUsage() {
+	fmt.Fprintf(os.Stderr, `%s [flags] book remove -id UINT32
+
+Remove book from storage
+    -id UINT32: ID of book to remove
+
+Example:
+    `+os.Args[0]+` book remove --id 1949993046
 `, os.Args[0])
 }

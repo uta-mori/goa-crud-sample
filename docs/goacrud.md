@@ -186,3 +186,121 @@ func (s *booksrvc) List(ctx context.Context) (res []*book.Book, err error) {
 ```
 
 ファイル book.go を編集し、create および list メソッドを実装します。 book.go の次のコードをコピーして置き換えます
+
+```go
+var bookStore = make([]*book.Book, 0)
+
+// Adds a new book to the book store.
+func (s *booksrvc) Create(ctx context.Context, p *book.Book) (res *book.Book, err error) {
+	res = &book.Book{ID: p.ID, Name: p.Name, Description: p.Description, Price: p.Price}
+	bookStore = append(bookStore, res)
+	s.logger.Print("book.create")
+	return res, nil
+}
+
+// List all entries
+func (s *booksrvc) List(ctx context.Context) ([]*book.Book, error) {
+	s.logger.Print("book.list")
+	return bookStore, nil
+}
+```
+
+サーバーをビルドします
+
+`go build ./cmd/book`
+
+サーバーを起動します
+
+`./book`
+
+次に、design.go ファイルを更新して、作成とリストの場合と同じように、更新と削除のメソッドを記述します。
+
+`goa gen book/design`でコードを生成します
+
+これで、`goa example`コマンドを実行して、追加された新しいサービスの実装と、HTTP を開始するためにゴルーチンを起動するビルド可能なサーバーファイルを生成できます。
+
+注: しかし、ここでは、ファイル book.go を削除し、book.go のバックアップを取ることによって、ファイルを再度生成する必要があります削除されていない場合は、goa examplecommand を実行すると、我々はすでにファイルを持っているので、それが生成されませんので、コードは追加された最新のサービスに更新されません。
+一度削除してバックアップを取ると、goa example コマンドを実行することができます。
+
+book.go を以下のように実装します
+
+```go
+package bookapi
+
+import (
+	book "book/gen/book"
+	"context"
+	"fmt"
+	"log"
+)
+
+// book service example implementation.
+// The example methods log the requests and return zero values.
+type booksrvc struct {
+	logger *log.Logger
+}
+
+// Errors
+var (
+	notFoundError = book.MakeNotFound(fmt.Errorf("book not found"))
+)
+
+// NewBook returns the book service implementation.
+func NewBook(logger *log.Logger) book.Service {
+	return &booksrvc{logger}
+}
+
+var bookStore = make([]*book.Book, 0)
+
+// Adds a new book to the book store.
+func (s *booksrvc) Create(ctx context.Context, p *book.Book) (res *book.Book, err error) {
+	res = &book.Book{ID: p.ID, Name: p.Name, Description: p.Description, Price: p.Price}
+	bookStore = append(bookStore, res)
+	s.logger.Print("book.create")
+	return res, nil
+}
+
+// List all entries
+func (s *booksrvc) List(ctx context.Context) ([]*book.Book, error) {
+	s.logger.Print("book.list")
+	return bookStore, nil
+}
+
+// Updating the existing book
+func (s *booksrvc) Update(ctx context.Context, p *book.Book) (err error) {
+	s.logger.Print("book.update")
+
+	for i, book := range bookStore {
+		if book.ID == p.ID {
+			book.Name = p.Name
+			book.Description = p.Description
+			book.Price = p.Price
+			bookStore = append(bookStore[:i], book)
+		}
+	}
+	return
+}
+
+// Remove book from storage
+func (s *booksrvc) Remove(ctx context.Context, p *book.RemovePayload) (err error) {
+	s.logger.Print("book.remove")
+
+	for i, book := range bookStore {
+		if book.ID == p.ID {
+			bookStore = append(bookStore[:i], bookStore[i+1:]...)
+			s.logger.Printf("The event with ID %d has been deleted successfully", book.ID)
+		} else {
+			return notFoundError
+		}
+	}
+	return
+}
+```
+
+`go build ./cmd/book`
+
+## テスト
+
+`./book`もしくは`go run ./cmd/book`
+
+> vscode の Rest Cient で`httptest`ディレクトリのファイルを使う
