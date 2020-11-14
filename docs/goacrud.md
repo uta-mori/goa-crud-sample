@@ -17,3 +17,122 @@
 go get -u goa.design/goa/v3
 go get -u goa.design/goa/v3/...
 ```
+
+それでは、book の記録を作成し、すべての book を一覧表示するための設計から始めましょう。
+ファイル`design/design.go`を作成して開き、次のコードを貼り付けます…
+
+```go
+package design
+
+import (
+	. "goa.design/goa/v3/dsl"
+)
+
+var _ = API("book", func() {
+	Title("Book Store")
+	Description("Service to perform CRUD operations using goa")
+	Server("book", func() {
+		Host("localhost", func() {
+			URI("http://localhost:8000")
+		})
+	})
+})
+```
+
+さらに、book 型を作成して追加し、`design/type.go`を開いて、次のコードを貼り付けます。
+
+```go
+package design
+
+import . "goa.design/goa/v3/dsl"
+
+var Book = ResultType("application/vnd.book", "Book", func() {
+	Description("Details of a book")
+
+	Attribute("id", UInt32, "ID of the book", func() {
+		Example("id", 1)
+	})
+	Attribute("name", String, "Name of book", func() {
+		Example("name", "book1")
+		MaxLength(100)
+	})
+	Attribute("description", String, "Description of the book", func() {
+		Example("name", "Books are human's best friend")
+		MaxLength(100)
+	})
+	Attribute("price", UInt32, "Price of the book", func() {
+		Example("price", 100)
+	})
+
+	Required("id", "name", "description", "price")
+})
+```
+
+それでは、`design/design.go`ファイルを更新して、作成と一覧取得のメソッドを作成しましょう。
+
+```go
+var _ = Service("book", func() {
+	Description("The book service gives details of the book.")
+
+	Error("not-found", ErrorResult, "Book Not Found Error")
+
+	//Method to add a new book
+	Method("create", func() {
+		Description("Adds a new book to the book store.")
+		Payload(Book)
+		Result(Book)
+		HTTP(func() {
+			POST("/")
+			Response(StatusCreated)
+		})
+	})
+
+	//Method to get all existing books
+	Method("list", func() {
+		Description("List all entries")
+		Result(ArrayOf(Book))
+		HTTP(func() {
+			GET("/books")
+			Response(StatusOK)
+		})
+	})
+})
+```
+
+サービスの設計が完了したので、`goa gen`コマンドを実行してコードを生成しましょう。design パッケージは book モジュールの下に作成されているため、コマンドラインは次のようになります。
+
+`goa gen book/design`
+
+以下のようなファイルが生成されます
+
+```
+gen
+├── book
+│   ├── client.go
+│   ├── endpoints.go
+│   ├── service.go
+│   └── views
+│       └── view.go
+└── http
+    ├── book
+    │   ├── client
+    │   │   ├── client.go
+    │   │   ├── cli.go
+    │   │   ├── encode_decode.go
+    │   │   ├── paths.go
+    │   │   └── types.go
+    │   └── server
+    │       ├── encode_decode.go
+    │       ├── paths.go
+    │       ├── server.go
+    │       └── types.go
+    ├── cli
+    │   └── book
+    │       └── cli.go
+    ├── openapi3.json
+    ├── openapi3.yaml
+    ├── openapi.json
+    └── openapi.yaml
+```
+
+次に、`goa example`コマンドを実行して、サービスの基本的な実装と、ゴルーチンを起動して HTTP を開始するビルド可能なサーバーファイルを生成できます。
