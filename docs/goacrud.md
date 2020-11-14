@@ -136,3 +136,53 @@ gen
 ```
 
 次に、`goa example`コマンドを実行して、サービスの基本的な実装と、ゴルーチンを起動して HTTP を開始するビルド可能なサーバーファイルを生成できます。
+
+```
+├── book.go
+├── cmd
+│   ├── book
+│   │   ├── http.go
+│   │   └── main.go
+│   └── book-cli
+│       ├── http.go
+│       └── main.go
+```
+
+`book.go`ファイルは以下のようになります
+
+```go
+package bookapi
+
+import (
+	book "book/gen/book"
+	"context"
+	"log"
+)
+
+// book service example implementation.
+// The example methods log the requests and return zero values.
+type booksrvc struct {
+	logger *log.Logger
+}
+
+// NewBook returns the book service implementation.
+func NewBook(logger *log.Logger) book.Service {
+	return &booksrvc{logger}
+}
+
+// Adds a new book to the book store.
+func (s *booksrvc) Create(ctx context.Context, p *book.Book) (res *book.Book, err error) {
+	res = &book.Book{}
+	s.logger.Print("book.create")
+	return
+}
+
+// List all entries
+func (s *booksrvc) List(ctx context.Context) (res []*book.Book, err error) {
+	s.logger.Print("book.list")
+	return
+}
+
+```
+
+ファイル book.go を編集し、create および list メソッドを実装します。 book.go の次のコードをコピーして置き換えます
