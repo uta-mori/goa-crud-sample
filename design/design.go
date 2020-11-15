@@ -9,7 +9,7 @@ var _ = API("book", func() {
 	Description("Service to perform CRUD operations using goa")
 	Server("book", func() {
 		Host("localhost", func() {
-			URI("http://localhost:8080")
+			URI("http://0.0.0.0:8088")
 		})
 	})
 })

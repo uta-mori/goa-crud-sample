@@ -3,7 +3,7 @@ info:
   title: Book Store
   description: Service to perform CRUD operations using goa
   version: ""
-host: localhost:8080
+host: 0.0.0.0:8088
 consumes:
 - application/json
 - application/xml

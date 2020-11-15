@@ -4,7 +4,7 @@ info:
   description: Service to perform CRUD operations using goa
   version: "1.0"
 servers:
-- url: http://localhost:8080
+- url: http://0.0.0.0:8088
 paths:
   /:
     post:
