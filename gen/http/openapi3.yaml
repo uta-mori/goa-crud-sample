@@ -275,5 +275,3 @@ components:
       - name
       - description
       - price
-security:
-- firebase__: []
