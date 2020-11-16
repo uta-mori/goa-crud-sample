@@ -1,4 +1,4 @@
-POST http://localhost:8000 HTTP/1.1
+POST https://sample-82sgqpjx.de.gateway.dev HTTP/1.1
 content-type: application/json
 
 {

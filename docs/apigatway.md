@@ -3,6 +3,21 @@
 [From Design To Production · Goa :: Design first.](https://goa.design/blog/002-endpoints/)
 で CloudEndpoint にデプロイする方法が解説されているようなので、api ゲートウェイにもできないかな
 
+## meta
+
+https://pkg.go.dev/goa.design/goa/v3@v3.2.5/dsl#Meta
+
+Meta は、オブジェクトに割り当てることができるキーと値のペアのセットを定義します。各値は文字列のスライスで構成されており、同じキーを使用して同じターゲット上で Meta 関数を複数回呼び出すことでスライスが構築されます。
+
+メタは、属性、結果タイプ、エンドポイント、レスポンス、サービス、API 定義に現れることがあります。
+
+キーは任意の値を持つことができますが、以下の名前には特別な意味があります。
+
+- "type:generate:force" は、定義されているタイプのコードを強制的に生成します。デフォルトでは、goa はサービスメソッドで明示的に使用される型のみを生成します。値は、構造体を生成するサービスの名前を列挙した文字列のスライスです。空のままにしておくと、すべてのサービスに対して構造体が生成されます。
+
+- "swagger:extension:xxx "は、Swagger の拡張子 xxx を設定します。
+  値は任意の有効な JSON を指定できます。API（Swagger info やタグオブジェクト）、Service（Swagger paths オブジェクト）、Method（Swagger path-item オブジェクト）、Route（Swagger operation オブジェクト）、Param（Swagger parameter オブジェクト）、Response（Swagger response オブジェクト）、Security（Swagger security-scheme オブジェクト）に適用されます。以下を参照してください。
+
 ## Leveraging Endpoints Auth
 
 OK now what? one of the main attraction of Endpoints is its ability to handle authentication. Endpoints supports many different

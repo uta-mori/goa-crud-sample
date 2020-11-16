@@ -15,14 +15,11 @@ produces:
 paths:
   /:
     post:
-      tags:
-      - book
-      summary: create book
       description: Adds a new book to the book store.
       operationId: book#create
       parameters:
-      - name: CreateRequestBody
-        in: body
+      - in: body
+        name: CreateRequestBody
         required: true
         schema:
           $ref: '#/definitions/BookCreateRequestBody'
@@ -38,17 +35,20 @@ paths:
             $ref: '#/definitions/BookCreateResponseBody'
       schemes:
       - http
-  /book/{id}:
-    delete:
+      summary: create book
       tags:
       - book
-      summary: remove book
+      x-google-backend:
+        address: https://goa-crud-sample-ztn77q7jxa-dt.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /book/{id}:
+    delete:
       description: Remove book from storage
       operationId: book#remove
       parameters:
-      - name: id
+      - description: ID of book to remove
         in: path
-        description: ID of book to remove
+        name: id
         required: true
         type: integer
       responses:
@@ -60,20 +60,23 @@ paths:
             $ref: '#/definitions/BookRemoveNotFoundResponseBody'
       schemes:
       - http
-    patch:
+      summary: remove book
       tags:
       - book
-      summary: update book
+      x-google-backend:
+        address: https://goa-crud-sample-ztn77q7jxa-dt.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+    patch:
       description: Updating the existing book
       operationId: book#update
       parameters:
-      - name: id
+      - description: ID of the book
         in: path
-        description: ID of the book
+        name: id
         required: true
         type: integer
-      - name: UpdateRequestBody
-        in: body
+      - in: body
+        name: UpdateRequestBody
         required: true
         schema:
           $ref: '#/definitions/BookUpdateRequestBody'
@@ -86,22 +89,31 @@ paths:
           description: OK response.
       schemes:
       - http
-  /books:
-    get:
+      summary: update book
       tags:
       - book
-      summary: list book
+      x-google-backend:
+        address: https://goa-crud-sample-ztn77q7jxa-dt.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
+  /books:
+    get:
       description: List all entries
       operationId: book#list
       responses:
         "200":
           description: OK response.
           schema:
-            type: array
             items:
               $ref: '#/definitions/BookResponse'
+            type: array
       schemes:
       - http
+      summary: list book
+      tags:
+      - book
+      x-google-backend:
+        address: https://goa-crud-sample-ztn77q7jxa-dt.a.run.app
+        path_translation: APPEND_PATH_TO_ADDRESS
 definitions:
   BookCreateRequestBody:
     title: BookCreateRequestBody

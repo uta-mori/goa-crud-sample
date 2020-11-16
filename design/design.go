@@ -21,6 +21,11 @@ var _ = Service("book", func() {
 
 	//Method to add a new book
 	Method("create", func() {
+		Meta("swagger:extension:x-google-backend",
+		`{
+			"address":"https://goa-crud-sample-ztn77q7jxa-dt.a.run.app",
+			"path_translation": "APPEND_PATH_TO_ADDRESS"
+			}`)
 		Description("Adds a new book to the book store.")
 		Payload(Book)
 		Result(Book)
@@ -32,6 +37,11 @@ var _ = Service("book", func() {
 
 	//Method to get all existing books
 	Method("list", func() {
+		Meta("swagger:extension:x-google-backend",
+		`{
+			"address":"https://goa-crud-sample-ztn77q7jxa-dt.a.run.app",
+			"path_translation": "APPEND_PATH_TO_ADDRESS"
+			}`)
 		Description("List all entries")
 		Result(ArrayOf(Book))
 		HTTP(func() {
@@ -40,6 +50,11 @@ var _ = Service("book", func() {
 		})
 	})
 	Method("update", func() {
+		Meta("swagger:extension:x-google-backend",
+		`{
+			"address":"https://goa-crud-sample-ztn77q7jxa-dt.a.run.app",
+			"path_translation": "APPEND_PATH_TO_ADDRESS"
+			}`)
 		Description("Updating the existing book")
 
 		Payload(Book)
@@ -52,6 +67,11 @@ var _ = Service("book", func() {
 
 	//Method to remove a particular book
 	Method("remove", func() {
+		Meta("swagger:extension:x-google-backend",
+		`{
+			"address":"https://goa-crud-sample-ztn77q7jxa-dt.a.run.app",
+			"path_translation": "APPEND_PATH_TO_ADDRESS"
+			}`)
 		Description("Remove book from storage")
 		Payload(func() {
 			Attribute("id", UInt32, "ID of book to remove")
